@@ -1,27 +1,373 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { api, googleLoginUrl } from './api.js';
+import React, { useEffect, useMemo, useState } from "react";
+import { api, googleLoginUrl } from "./api.js";
 
 const columns = [
-  ['applied', '📝', 'Applied'], ['interview', '📞', 'Interview'], ['assessment', '🔄', 'Assessment'], ['offer', '✅', 'Offer'], ['rejected', '❌', 'Rejected']
+  ["applied", "📝", "Applied"],
+  ["interview", "📞", "Interview"],
+  ["assessment", "🔄", "Assessment"],
+  ["offer", "✅", "Offer"],
+  ["rejected", "❌", "Rejected"],
 ];
-const emptyJob = { company: '', position: '', location: '', status: 'applied', applicationDate: new Date().toISOString().slice(0, 10), salary: '', notes: '', interviewDate: '', reminderDate: '' };
-const formatDate = (date) => date ? new Date(date).toLocaleDateString(undefined, { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' }) : '';
+const emptyJob = {
+  company: "",
+  position: "",
+  location: "",
+  status: "applied",
+  applicationDate: new Date().toISOString().slice(0, 10),
+  salary: "",
+  notes: "",
+  interviewDate: "",
+  reminderDate: "",
+};
+const formatDate = (date) =>
+  date
+    ? new Date(date).toLocaleDateString(undefined, {
+        timeZone: "UTC",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "";
 
-function Login() { return <main className="login"><div className="brand">Job<span>Flow</span></div><section><p className="eyebrow">APPLICATION TRACKER</p><h1>Turn applications into opportunities.</h1><p>Keep every role, interview, and next step in one calm, focused workspace.</p><a className="google-button" href={googleLoginUrl}><b>G</b> Continue with Google</a><small>Sign in securely to create your private tracker.</small></section></main>; }
+function Login() {
+  return (
+    <main className="login">
+      <div className="brand">
+        Job<span>Flow</span>
+      </div>
+      <section>
+        <p className="eyebrow">APPLICATION TRACKER</p>
+        <h1>Turn applications into opportunities.</h1>
+        <p>
+          Keep every role, interview, and next step in one calm, focused
+          workspace.
+        </p>
+        <a className="google-button" href={googleLoginUrl}>
+          <b>G</b> Continue with Google
+        </a>
+        <small>Sign in securely to create your private tracker.</small>
+      </section>
+    </main>
+  );
+}
 
 function JobForm({ job, onSave, onClose }) {
-  const [form, setForm] = useState(job || emptyJob); const [saving, setSaving] = useState(false); const update = (event) => setForm({ ...form, [event.target.name]: event.target.value });
-  const submit = async (event) => { event.preventDefault(); setSaving(true); try { await onSave({ ...form, salary: form.salary === '' ? undefined : Number(form.salary), interviewDate: form.interviewDate || undefined, reminderDate: form.reminderDate || undefined }); onClose(); } finally { setSaving(false); } };
-  return <div className="overlay"><form className="modal" onSubmit={submit}><div className="modal-title"><h2>{job ? 'Edit application' : 'Add application'}</h2><button type="button" className="icon" onClick={onClose}>×</button></div><div className="fields"><label>Company<input required name="company" value={form.company} onChange={update} placeholder="e.g. Microsoft"/></label><label>Position<input required name="position" value={form.position} onChange={update} placeholder="e.g. Software Engineer"/></label><label>Location<input name="location" value={form.location} onChange={update} placeholder="Remote or city"/></label><label>Status<select name="status" value={form.status} onChange={update}>{columns.map(([value,, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label>Application date<input type="date" name="applicationDate" value={form.applicationDate?.slice(0,10)} onChange={update}/></label><label>Salary (annual)<input type="number" min="0" name="salary" value={form.salary} onChange={update} placeholder="e.g. 85000"/></label><label>Interview date<input type="date" name="interviewDate" value={form.interviewDate?.slice(0,10) || ''} onChange={update}/></label><label>Reminder date<input type="date" name="reminderDate" value={form.reminderDate?.slice(0,10) || ''} onChange={update}/></label></div><label>Notes<textarea name="notes" value={form.notes} onChange={update} placeholder="Hiring contact, interview prep, follow-up notes…"/></label><div className="actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button disabled={saving}>{saving ? 'Saving…' : 'Save application'}</button></div></form></div>;
+  const [form, setForm] = useState(job || emptyJob);
+  const [saving, setSaving] = useState(false);
+  const update = (event) =>
+    setForm({ ...form, [event.target.name]: event.target.value });
+  const submit = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      await onSave({
+        ...form,
+        salary: form.salary === "" ? undefined : Number(form.salary),
+        interviewDate: form.interviewDate || undefined,
+        reminderDate: form.reminderDate || undefined,
+      });
+      onClose();
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <div className="overlay">
+      <form className="modal" onSubmit={submit}>
+        <div className="modal-title">
+          <h2>{job ? "Edit application" : "Add application"}</h2>
+          <button type="button" className="icon" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <div className="fields">
+          <label>
+            Company
+            <input
+              required
+              name="company"
+              value={form.company}
+              onChange={update}
+              placeholder="e.g. Microsoft"
+            />
+          </label>
+          <label>
+            Position
+            <input
+              required
+              name="position"
+              value={form.position}
+              onChange={update}
+              placeholder="e.g. Software Engineer"
+            />
+          </label>
+          <label>
+            Location
+            <input
+              name="location"
+              value={form.location}
+              onChange={update}
+              placeholder="Remote or city"
+            />
+          </label>
+          <label>
+            Status
+            <select name="status" value={form.status} onChange={update}>
+              {columns.map(([value, , label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Application date
+            <input
+              type="date"
+              name="applicationDate"
+              value={form.applicationDate?.slice(0, 10)}
+              onChange={update}
+            />
+          </label>
+          <label>
+            Salary (annual)
+            <input
+              type="number"
+              min="0"
+              name="salary"
+              value={form.salary}
+              onChange={update}
+              placeholder="e.g. 85000"
+            />
+          </label>
+          <label>
+            Interview date
+            <input
+              type="date"
+              name="interviewDate"
+              value={form.interviewDate?.slice(0, 10) || ""}
+              onChange={update}
+            />
+          </label>
+          <label>
+            Reminder date
+            <input
+              type="date"
+              name="reminderDate"
+              value={form.reminderDate?.slice(0, 10) || ""}
+              onChange={update}
+            />
+          </label>
+        </div>
+        <label>
+          Notes
+          <textarea
+            name="notes"
+            value={form.notes}
+            onChange={update}
+            placeholder="Hiring contact, interview prep, follow-up notes…"
+          />
+        </label>
+        <div className="actions">
+          <button type="button" className="secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button disabled={saving}>
+            {saving ? "Saving…" : "Save application"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
 function Dashboard({ user, onLogout }) {
-  const [jobs, setJobs] = useState([]), [search, setSearch] = useState(''), [filter, setFilter] = useState('all'), [editing, setEditing] = useState(null), [open, setOpen] = useState(false), [error, setError] = useState('');
-  const load = async () => { try { setJobs(await api.jobs()); } catch (e) { setError(e.message); } }; useEffect(() => { load(); }, []);
-  const visible = useMemo(() => jobs.filter(j => (filter === 'all' || j.status === filter) && `${j.company} ${j.position} ${j.location}`.toLowerCase().includes(search.toLowerCase())), [jobs, search, filter]);
-  const save = async (job) => { try { if (editing?._id) await api.update(editing._id, job); else await api.create(job); await load(); } catch (e) { setError(e.message); } };
-  const remove = async (id) => { if (confirm('Delete this application?')) { try { await api.remove(id); await load(); } catch (e) { setError(e.message); } } };
-  return <main className="app"><header><div><div className="brand">Job<span>Flow</span></div><p>Welcome back, {user.name?.split(' ')[0]}.</p></div><div className="header-right">{user.avatar && <img src={user.avatar} alt=""/>}<button className="secondary" onClick={onLogout}>Sign out</button></div></header><section className="toolbar"><div><p className="eyebrow">YOUR PIPELINE</p><h1>Applications</h1><span>{jobs.length} total roles tracked</span></div><button onClick={() => { setEditing(null); setOpen(true); }}>+ Add application</button></section>{error && <p className="error">{error}</p>}<section className="filters"><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search company, role, or location…"/><select value={filter} onChange={e => setFilter(e.target.value)}><option value="all">All statuses</option>{columns.map(([value,, label]) => <option key={value} value={value}>{label}</option>)}</select></section><section className="board">{columns.map(([status, icon, label]) => <div className="column" key={status}><div className="column-title"><span>{icon} {label}</span><b>{visible.filter(j => j.status === status).length}</b></div>{visible.filter(j => j.status === status).map(job => <article className="card" key={job._id}><div className="card-top"><h3>{job.company}</h3><button className="icon" onClick={() => { setEditing(job); setOpen(true); }}>⋯</button></div><p className="position">{job.position}</p>{job.location && <p className="muted">⌖ {job.location}</p>}{job.interviewDate && <p className="date">📅 Interview {formatDate(job.interviewDate)}</p>}{job.notes && <p className="notes">{job.notes}</p>}<div className="card-actions"><button className="text-button" onClick={() => { setEditing(job); setOpen(true); }}>Edit</button><button className="text-button danger" onClick={() => remove(job._id)}>Delete</button></div></article>)}{visible.filter(j => j.status === status).length === 0 && <p className="empty">No applications</p>}</div>)}</section>{open && <JobForm job={editing} onSave={save} onClose={() => setOpen(false)}/>}</main>;
+  const [jobs, setJobs] = useState([]),
+    [search, setSearch] = useState(""),
+    [filter, setFilter] = useState("all"),
+    [editing, setEditing] = useState(null),
+    [open, setOpen] = useState(false),
+    [error, setError] = useState("");
+  const load = async () => {
+    try {
+      setJobs(await api.jobs());
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+  useEffect(() => {
+    load();
+  }, []);
+  const visible = useMemo(
+    () =>
+      jobs.filter(
+        (j) =>
+          (filter === "all" || j.status === filter) &&
+          `${j.company} ${j.position} ${j.location}`
+            .toLowerCase()
+            .includes(search.toLowerCase()),
+      ),
+    [jobs, search, filter],
+  );
+  const save = async (job) => {
+    try {
+      if (editing?._id) await api.update(editing._id, job);
+      else await api.create(job);
+      await load();
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+  const remove = async (id) => {
+    if (confirm("Delete this application?")) {
+      try {
+        await api.remove(id);
+        await load();
+      } catch (e) {
+        setError(e.message);
+      }
+    }
+  };
+  return (
+    <main className="app">
+      <header>
+        <div>
+          <div className="brand">
+            Job<span>Flow</span>
+          </div>
+          <p>Welcome back, {user.name?.split(" ")[0]}.</p>
+        </div>
+        <div className="header-right">
+          {user.avatar && <img src={user.avatar} alt="" />}
+          <button className="secondary" onClick={onLogout}>
+            Sign out
+          </button>
+        </div>
+      </header>
+      <section className="toolbar">
+        <div>
+          <p className="eyebrow">YOUR PIPELINE</p>
+          <h1>Applications</h1>
+          <span>{jobs.length} total roles tracked</span>
+        </div>
+        <button
+          onClick={() => {
+            setEditing(null);
+            setOpen(true);
+          }}
+        >
+          + Add application
+        </button>
+      </section>
+      {error && <p className="error">{error}</p>}
+      <section className="filters">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search company, role, or location…"
+        />
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <option value="all">All statuses</option>
+          {columns.map(([value, , label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </section>
+      <section className="board">
+        {columns.map(([status, icon, label]) => (
+          <div className="column" key={status}>
+            <div className="column-title">
+              <span>
+                {icon} {label}
+              </span>
+              <b>{visible.filter((j) => j.status === status).length}</b>
+            </div>
+            {visible
+              .filter((j) => j.status === status)
+              .map((job) => (
+                <article className="card" key={job._id}>
+                  <div className="card-top">
+                    <h3>{job.company}</h3>
+                    <button
+                      className="icon"
+                      onClick={() => {
+                        setEditing(job);
+                        setOpen(true);
+                      }}
+                    >
+                      ⋯
+                    </button>
+                  </div>
+                  <p className="position">{job.position}</p>
+                  {job.location && <p className="muted">⌖ {job.location}</p>}
+                  {job.interviewDate && (
+                    <p className="date">
+                      📅 Interview {formatDate(job.interviewDate)}
+                    </p>
+                  )}
+                  {job.notes && <p className="notes">{job.notes}</p>}
+                  <div className="card-actions">
+                    <button
+                      className="text-button"
+                      onClick={() => {
+                        setEditing(job);
+                        setOpen(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="text-button danger"
+                      onClick={() => remove(job._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </article>
+              ))}
+            {visible.filter((j) => j.status === status).length === 0 && (
+              <p className="empty">No applications</p>
+            )}
+          </div>
+        ))}
+      </section>
+      {open && (
+        <JobForm job={editing} onSave={save} onClose={() => setOpen(false)} />
+      )}
+    </main>
+  );
 }
 
-export default function App() { const [user, setUser] = useState(null), [loading, setLoading] = useState(true); useEffect(() => { const params = new URLSearchParams(location.search); const token = params.get('token'); if (token) { localStorage.setItem('job_tracker_token', token); history.replaceState({}, '', '/'); } const stored = token || localStorage.getItem('job_tracker_token'); if (!stored) return setLoading(false); api.me().then(({ user }) => setUser(user)).catch(() => localStorage.removeItem('job_tracker_token')).finally(() => setLoading(false)); }, []); if (loading) return <div className="loading">Loading your workspace…</div>; return user ? <Dashboard user={user} onLogout={() => { localStorage.removeItem('job_tracker_token'); setUser(null); }}/> : <Login/>; }
+export default function App() {
+  const [user, setUser] = useState(null),
+    [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("job_tracker_token", token);
+      history.replaceState({}, "", "/");
+    }
+    const stored = token || localStorage.getItem("job_tracker_token");
+    if (!stored) return setLoading(false);
+    api
+      .me()
+      .then(({ user }) => setUser(user))
+      .catch(() => localStorage.removeItem("job_tracker_token"))
+      .finally(() => setLoading(false));
+  }, []);
+  if (loading) return <div className="loading">Loading your workspace…</div>;
+  return user ? (
+    <Dashboard
+      user={user}
+      onLogout={() => {
+        localStorage.removeItem("job_tracker_token");
+        setUser(null);
+      }}
+    />
+  ) : (
+    <Login />
+  );
+}
