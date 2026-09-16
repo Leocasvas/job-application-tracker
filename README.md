@@ -39,6 +39,7 @@ environment variables in the hosting dashboard, never in Git:
 MONGODB_URI=your_mongodb_connection_string
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=https://your-render-service.onrender.com/api/auth/google/callback
 JWT_SECRET=a_new_long_random_production_secret
 CLIENT_ORIGIN=https://YOUR-GITHUB-USERNAME.github.io
 CLIENT_URL=https://YOUR-GITHUB-USERNAME.github.io/job-application-tracker
