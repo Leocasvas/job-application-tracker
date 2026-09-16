@@ -12,10 +12,14 @@ const app = express();
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(passport.initialize());
+app.get('/', (_req, res) => res.json({ service: 'JobFlow API', health: '/api/health' }));
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use((error, _req, res, _next) => {
+  // Keep the response safe for users while writing the diagnostic details to
+  // the server logs where they can be inspected during deployment.
+  console.error('Unhandled request error:', error);
   if (error.name === 'ValidationError') return res.status(400).json({ message: error.message });
   res.status(500).json({ message: 'Something went wrong.' });
 });
