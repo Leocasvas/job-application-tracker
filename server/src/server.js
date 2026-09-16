@@ -7,7 +7,9 @@ import authRoutes from './routes/auth.js';
 import jobRoutes from './routes/jobs.js';
 
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+// Browser requests send only an origin (scheme + host), while OAuth redirects
+// need the full frontend URL, including the GitHub Pages repository path.
+app.use(cors({ origin: process.env.CLIENT_ORIGIN || process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(passport.initialize());
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));

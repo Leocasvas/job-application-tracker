@@ -29,6 +29,26 @@ npm run dev
 
 Open `http://localhost:5173`.
 
+## Production deployment
+
+Deploy `server/` as a Node web service (for example, on Render) with `npm install`
+as the build command and `npm start` as the start command. Set these server
+environment variables in the hosting dashboard, never in Git:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+JWT_SECRET=a_new_long_random_production_secret
+CLIENT_ORIGIN=https://YOUR-GITHUB-USERNAME.github.io
+CLIENT_URL=https://YOUR-GITHUB-USERNAME.github.io/job-application-tracker
+```
+
+For the frontend, create `client/.env.production` from
+`client/.env.production.example` and replace the API URL with your Render web
+service URL. GitHub Pages then publishes the Vite build at
+`https://YOUR-GITHUB-USERNAME.github.io/job-application-tracker/`.
+
 ## Google Cloud redirect URI
 
 Add this redirect URI to your Google OAuth web-client configuration:
